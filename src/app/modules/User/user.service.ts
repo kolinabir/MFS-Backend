@@ -248,12 +248,21 @@ const viewAllBlockedUsers = async () => {
   return result;
 };
 
-const viewAllAgents = async () => {
-  const result = await User.find({
+const viewAllAgents = async (query: {
+  isAccountActive?: boolean;
+  isAccountVerified?: boolean;
+}) => {
+  const filter = {
     role: 'AGENT',
-    isAccountActive: true,
-    isAccountVerified: true,
-  });
+    ...(query.isAccountActive !== undefined && {
+      isAccountActive: query.isAccountActive,
+    }),
+    ...(query.isAccountVerified !== undefined && {
+      isAccountVerified: query.isAccountVerified,
+    }),
+  };
+
+  const result = await User.find(filter);
   return result;
 };
 

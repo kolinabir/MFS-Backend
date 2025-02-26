@@ -127,7 +127,22 @@ const viewAllBlockedUsers = catchAsync(async (req, res) => {
 });
 
 const viewAllAgents = catchAsync(async (req, res) => {
-  const result = await UserService.viewAllAgents();
+  const query = {
+    isAccountActive:
+      req.query.isAccountActive === 'true'
+        ? true
+        : req.query.isAccountActive === 'false'
+          ? false
+          : undefined,
+    isAccountVerified:
+      req.query.isAccountVerified === 'true'
+        ? true
+        : req.query.isAccountVerified === 'false'
+          ? false
+          : undefined,
+  };
+
+  const result = await UserService.viewAllAgents(query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
