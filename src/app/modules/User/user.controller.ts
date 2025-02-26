@@ -148,6 +148,7 @@ const viewAllBlockedAgents = catchAsync(async (req, res) => {
 
 const viewUserDetails = catchAsync(async (req, res) => {
   const result = await UserService.viewUserDetails(req.user);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

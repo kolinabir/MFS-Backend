@@ -13,8 +13,6 @@ router.get(
 router.get('/all-money', auth(USER_ROLE.ADMIN), UserController.getAllMoney); //done
 router.get('/new-agents', auth(USER_ROLE.ADMIN), UserController.viewNewAgents); //done
 
-
-
 router.get('/users', auth(USER_ROLE.ADMIN), UserController.viewAllUsers); //done
 router.get(
   '/blocked-users',
@@ -36,7 +34,7 @@ router.get(
 
 router.get(
   '/details',
-  auth(USER_ROLE.USER, USER_ROLE.AGENT),
+  auth(USER_ROLE.USER, USER_ROLE.AGENT, USER_ROLE.ADMIN),
   UserController.viewUserDetails,
 ); //done
 
