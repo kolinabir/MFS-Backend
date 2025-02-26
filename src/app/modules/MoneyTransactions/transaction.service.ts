@@ -232,9 +232,21 @@ const getTransactionsByPhoneNo = async (phoneNo: string) => {
   };
 };
 
+const getBalance = async (user: JwtPayload) => {
+  const userDetails = await User.findOne({ mobileNumber: user.mobileNumber });
+  if (!userDetails) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return {
+    balance: userDetails.balance,
+    mobileNumber: userDetails.mobileNumber,
+  };
+};
+
 export const TransactionServices = {
   sendMoneyToUser,
   cashOut,
   cashIn,
   getTransactionsByPhoneNo,
+  getBalance,
 };

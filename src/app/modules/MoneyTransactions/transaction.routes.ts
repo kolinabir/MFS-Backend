@@ -23,6 +23,12 @@ router.post('/cash-out', auth(USER_ROLE.USER), TransactionController.cashOut); /
 router.post('/cash-in', auth(USER_ROLE.AGENT), TransactionController.cashIn);
 
 router.get(
+  '/balance',
+  auth(USER_ROLE.USER, USER_ROLE.AGENT, USER_ROLE.ADMIN),
+  TransactionController.getBalance,
+);
+
+router.get(
   '/transaction/:phoneNo',
   auth(USER_ROLE.ADMIN),
   TransactionController.getTransactionsByPhoneNo,

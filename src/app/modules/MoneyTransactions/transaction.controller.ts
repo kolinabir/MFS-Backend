@@ -44,9 +44,20 @@ const getTransactionsByPhoneNo = catchAsync(async (req, res) => {
   });
 });
 
+const getBalance = catchAsync(async (req, res) => {
+  const result = await TransactionServices.getBalance(req.user);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Balance retrieved successfully',
+    data: result,
+  });
+});
+
 export const TransactionController = {
   sendMoney,
   cashOut,
   cashIn,
   getTransactionsByPhoneNo,
+  getBalance,
 };
