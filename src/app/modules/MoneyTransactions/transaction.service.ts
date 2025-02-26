@@ -223,7 +223,9 @@ const getTransactionsByPhoneNo = async (phoneNo: string) => {
 
   const cashInTransactions = await TransactionCashIn.find({
     $or: [{ user: user._id }, { agent: user._id }],
-  }).populate(['user', 'agent']);
+  })
+    .populate(['user', 'agent'])
+    .limit(100);
 
   return {
     sendMoneyTransactions,
