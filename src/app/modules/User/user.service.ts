@@ -3,7 +3,11 @@
 import { JwtPayload } from 'jsonwebtoken';
 import { TUser } from './user.interface';
 import { User } from './user.model';
-
+import {
+  TransactionCashIn,
+  TransactionCashOut,
+  TransactionSendMoney,
+} from '../MoneyTransactions/transaction.model';
 
 const createUserIntoDB = async (payload: TUser) => {
   let balance = 0;
@@ -85,7 +89,148 @@ const viewBalanceOfUserORAgent = async (mobileNumber: number) => {
   return result;
 };
 
+const getAllTransactions = async (userN: JwtPayload) => {
+  const user = await User.findOne({
+    mobileNumber: userN.mobileNumber,
+  });
+  if (!user) {
+    throw new Error('User not found');
+  }
 
+  const sendMoney = await TransactionSendMoney.find({
+    sender: user._id,
+  }).populate({
+    path: 'receiver',
+    select: 'name mobileNumber',
+  });
+  const receiveMoney = await TransactionSendMoney.find({
+    receiver: user._id,
+  }).populate({
+    path: 'sender',
+    select: 'name mobileNumber',
+  });
+  let cashIn = [];
+  if (user.role === 'AGENT') {
+    cashIn = await TransactionCashIn.find({
+      agent: user._id,
+    }).populate({
+      path: 'user',
+      select: 'name mobileNumber',
+    });
+  } else {
+    cashIn = await TransactionCashIn.find({
+      user: user._id,
+    }).populate({
+      path: 'agent',
+      select: 'name mobileNumber',
+    });
+  }
+  const cashOut = await TransactionCashOut.find({
+    user: user._id,
+  }).populate({
+    path: 'agent',
+    select: 'name mobileNumber',
+  });
+
+  const allTransactions = [
+    ...sendMoney,
+    ...receiveMoney,
+    ...cashIn,
+    ...cashOut,
+  ].sort((a, b) => {
+    const dateA =
+      a.transactionDate instanceof Date
+        ? a.transactionDate.getTime()
+        : undefined;
+    const dateB =
+      b.transactionDate instanceof Date
+        ? b.transactionDate.getTime()
+        : undefined;
+    if (dateA !== undefined && dateB !== undefined) {
+      return dateB - dateA;
+    }
+    return 0;
+  });
+  //show only 100 transactions
+  if (allTransactions.length > 100) {
+    return allTransactions.slice(0, 100);
+  }
+  return allTransactions;
+};
+
+const getAllTransactionsOfUserORAgent = async (mobileNumber: number) => {
+  const user = await User.findOne({
+    mobileNumber: mobileNumber,
+  });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const sendMoney = await TransactionSendMoney.find({
+    sender: user._id,
+  }).populate({
+    path: 'receiver',
+    select: 'name mobileNumber',
+  });
+  const receiveMoney = await TransactionSendMoney.find({
+    receiver: user._id,
+  }).populate({
+    path: 'sender',
+    select: 'name mobileNumber',
+  });
+  let cashIn = [];
+  if (user.role === 'AGENT') {
+    cashIn = await TransactionCashIn.find({
+      agent: user._id,
+    }).populate({
+      path: 'user',
+      select: 'name mobileNumber',
+    });
+  } else {
+    cashIn = await TransactionCashIn.find({
+      user: user._id,
+    }).populate({
+      path: 'agent',
+      select: 'name mobileNumber',
+    });
+  }
+  let cashOut = [];
+  if (user.role === 'USER') {
+    cashOut = await TransactionCashOut.find({
+      user: user._id,
+    }).populate({
+      path: 'agent',
+      select: 'name mobileNumber',
+    });
+  } else {
+    cashOut = await TransactionCashOut.find({
+      agent: user._id,
+    }).populate({
+      path: 'user',
+      select: 'name mobileNumber',
+    });
+  }
+
+  const allTransactions = [
+    ...sendMoney,
+    ...receiveMoney,
+    ...cashIn,
+    ...cashOut,
+  ].sort((a, b) => {
+    const dateA =
+      a.transactionDate instanceof Date
+        ? a.transactionDate.getTime()
+        : undefined;
+    const dateB =
+      b.transactionDate instanceof Date
+        ? b.transactionDate.getTime()
+        : undefined;
+    if (dateA !== undefined && dateB !== undefined) {
+      return dateB - dateA;
+    }
+    return 0;
+  });
+  return allTransactions;
+};
 
 const viewAllUsers = async () => {
   const result = await User.find({
