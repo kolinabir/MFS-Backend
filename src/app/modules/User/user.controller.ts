@@ -85,7 +85,27 @@ const viewBalanceOfUserORAgent = catchAsync(async (req, res) => {
   });
 });
 
+const getAllTransactions = catchAsync(async (req, res) => {
+  const result = await UserService.getAllTransactions(req.user);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All transactions',
+    data: result,
+  });
+});
 
+const getAllTransactionsOfUserORAgent = catchAsync(async (req, res) => {
+  const result = await UserService.getAllTransactionsOfUserORAgent(
+    Number(req.params.mobileNumber),
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All transactions',
+    data: result,
+  });
+});
 
 const viewAllUsers = catchAsync(async (req, res) => {
   const result = await UserService.viewAllUsers();
@@ -145,6 +165,8 @@ export const UserController = {
   getBalance,
   getAllMoney,
   viewBalanceOfUserORAgent,
+  getAllTransactions,
+  getAllTransactionsOfUserORAgent,
   viewAllUsers,
   viewAllBlockedUsers,
   viewAllAgents,

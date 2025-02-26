@@ -134,6 +134,8 @@ export const UserService = {
   getBalance,
   getAllMoney,
   viewBalanceOfUserORAgent,
+  getAllTransactions,
+  getAllTransactionsOfUserORAgent,
   viewAllUsers,
   viewAllBlockedUsers,
   viewAllAgents,
