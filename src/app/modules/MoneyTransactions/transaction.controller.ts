@@ -33,8 +33,20 @@ const cashIn = catchAsync(async (req, res) => {
   });
 });
 
+const getTransactionsByPhoneNo = catchAsync(async (req, res) => {
+  const { phoneNo } = req.params;
+  const result = await TransactionServices.getTransactionsByPhoneNo(phoneNo);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Transactions retrieved successfully',
+    data: result,
+  });
+});
+
 export const TransactionController = {
   sendMoney,
   cashOut,
   cashIn,
+  getTransactionsByPhoneNo,
 };

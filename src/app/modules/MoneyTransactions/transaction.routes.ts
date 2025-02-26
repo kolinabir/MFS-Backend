@@ -22,4 +22,10 @@ router.post('/cash-out', auth(USER_ROLE.USER), TransactionController.cashOut); /
 
 router.post('/cash-in', auth(USER_ROLE.AGENT), TransactionController.cashIn);
 
+router.get(
+  '/transaction/:phoneNo',
+  auth(USER_ROLE.ADMIN),
+  TransactionController.getTransactionsByPhoneNo,
+);
+
 export const transactionRoutes = router;

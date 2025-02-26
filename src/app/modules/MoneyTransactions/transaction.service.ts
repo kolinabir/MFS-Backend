@@ -207,8 +207,34 @@ const cashIn = async (payload: TTransactionsCashIn, agent: JwtPayload) => {
   }
 };
 
+const getTransactionsByPhoneNo = async (phoneNo: string) => {
+  const user = await User.findOne({ mobileNumber: phoneNo });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const sendMoneyTransactions = await TransactionSendMoney.find({
+    $or: [{ sender: user._id }, { receiver: user._id }],
+  }).populate(['sender', 'receiver']);
+
+  const cashOutTransactions = await TransactionCashOut.find({
+    $or: [{ user: user._id }, { agent: user._id }],
+  }).populate(['user', 'agent']);
+
+  const cashInTransactions = await TransactionCashIn.find({
+    $or: [{ user: user._id }, { agent: user._id }],
+  }).populate(['user', 'agent']);
+
+  return {
+    sendMoneyTransactions,
+    cashOutTransactions,
+    cashInTransactions,
+  };
+};
+
 export const TransactionServices = {
   sendMoneyToUser,
   cashOut,
   cashIn,
+  getTransactionsByPhoneNo,
 };
